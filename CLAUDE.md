@@ -76,7 +76,8 @@ with revenue share. Initial market: Taiwan / Hong Kong, bilingual 中文/English
   confirmed → money-flow = prefund 30d before due (1A); auth = Clerk; e-sign =
   Dropbox Sign API (pending G2 lawyer gate). See docs/ARCHITECTURE.md.
 - [x] G0: git init + project scaffold (Next.js 15 + TS strict + vitest; build green)
-- [ ] ui-ux-spec.md
+- [x] ui-ux-spec.md (2026-07-12: 14 screens S01–S14; clock-visibility / event-log /
+  role-symmetry UX rules) — ready for image2 UI generation
 - [ ] G2 lawyer consult (blocks E2) · G3 Stripe KYC (start now) · GitHub repo + Vercel connect
 - Note: founder waived user interviews 2026-07-11; build gate "≥2 committed creators before E4" is the first external validation signal.
 
