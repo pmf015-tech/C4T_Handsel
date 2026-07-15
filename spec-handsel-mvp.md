@@ -271,6 +271,62 @@ plus G1-G3 calendar time (start G3 immediately).
 | `db/migrations/` | Postgres schema (deals, deal_events, milestones, reports, disputes, webhook_events) |
 | `e2e/` | Playwright journeys |
 
+## Hackathon Addendum — Build with Gemini XPRIZE (added 2026-07-15)
+
+Handsel enters **XPRIZE "Build with Gemini"** (Money & Financial Access category).
+HK deadline **2026-08-18 04:00**; internal submission target **2026-08-16**.
+Contest constraints that now shape the MVP:
+
+- **New-project rule:** all Handsel code was created after 2026-05-19 ✓ (repo history proves it).
+- **Gemini + Google Cloud:** at least one production LLM call MUST use the Gemini API,
+  and ≥1 Google Cloud product must be used → we use **Vertex AI (Gemini)** — one
+  dependency satisfies both.
+- **Real business evidence required:** real customers, real revenue, expense
+  disclosure, agent execution logs, 3-min video, 500–1000-word narrative.
+
+### E8 (NEW): Gemini Settlement Agent — the AI-native operations core
+
+The judging criterion "AI-Native Operations" requires AI making real decisions in
+production. E8 is that story:
+
+1. **Contract → settlement rules**: Gemini reads the signed contract/term sheet and
+   extracts rev-share %, milestones, deadlines, payment terms into structured
+   settlement rules (JSON), human-confirmed once.
+2. **Reconciliation agent**: brand's monthly sales CSV → Gemini cross-checks against
+   settlement rules → flags under-reporting, math errors, late payments → generates
+   the settlement statement (PDF) and computed payable amount.
+3. **Ops agents**: onboarding follow-ups, deadline nudges, first-pass dispute triage.
+4. **Agent log**: every Gemini decision is written to `deal_events` (same append-only
+   trail) and surfaced in the UI (S15) — this doubles as XPRIZE "product evidence".
+
+Guardrail: Gemini **proposes**, deterministic domain code **disposes** — the pure
+rev-share function and the state machine remain the source of truth for money math;
+the agent's numbers are always reconciled against them before anything is charged.
+
+### Revenue model for the contest window (real money, low regulatory surface)
+
+- **Paid settlement reports**: HK$99–299 per report (Stripe Payment Link — charges
+  only, no fund-holding, zero licensing exposure).
+- **Paid pilots**: HK$499–999 per creator×brand pair for a managed deal cycle.
+- **Escrow (E4)**: full flow demoed on Stripe test mode; goes LIVE for one
+  small-amount real deal ONLY IF Stripe Connect platform approval (HK entity, BR +
+  company account already in place) lands within the window. Prize case does NOT
+  depend on live escrow — revenue evidence comes from reports/pilots.
+
+### Contest schedule (HKT)
+
+| Week | Dates | Must ship |
+|---|---|---|
+| W1 | 07-15 → 07-21 | GitHub repo + Vercel live; Clerk; DB schema; E1 deal builder functional; Vertex AI Gemini wired (contract→rules agent v1); Stripe Connect platform application submitted; recruit 2 pilot creator×brand pairs |
+| W2 | 07-22 → 07-28 | E2 lightweight e-sign (click-sign + content hash + email receipt); E3 milestones + sales report; Gemini reconciliation agent + statement PDF; **first paid report = first real revenue** |
+| W3 | 07-29 → 08-04 | E4 escrow full flow on Stripe test mode; live small-amount deal if Connect approved; S15 agent console; dispute-triage agent |
+| W4 | 08-05 → 08-11 | Evidence pack: Stripe revenue screenshots, customer testimonials + contacts, agent execution logs, simple P&L + expense disclosure; narrative draft; video script |
+| W5 | 08-12 → 08-16 | 3-min video, README polish, dry-run judging checklist, **submit 08-16** (48h buffer) |
+
+Scope cuts for the window: Dropbox Sign deferred (click-sign + hash is contractually
+weaker but demo-sufficient; G2 lawyer gate unchanged for post-contest); S12 public
+profiles and S14 admin console reduced to minimum; bilingual UI English-first.
+
 ## Related
 
 - Design doc (APPROVED): `~/.gstack/projects/C4T_Handsel/melvin-main-design-20260710-225226.md`

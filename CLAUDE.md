@@ -66,6 +66,23 @@ with revenue share. Initial market: Taiwan / Hong Kong, bilingual 中文/English
 - E2E (Playwright) for the critical path: create deal → sign → milestone → payout.
 - No mocked Stripe in E2E against staging; use Stripe test mode.
 
+## Hackathon Context (until 2026-08-18)
+
+Handsel is being built for **XPRIZE "Build with Gemini"** (Money & Financial Access).
+Overrides while the contest runs:
+
+- **Gemini API via Vertex AI is mandatory** for at least one production LLM call
+  (satisfies the Google Cloud requirement too). The Gemini Settlement Agent (spec E8)
+  is the AI-native-operations centerpiece: contract→settlement-rules extraction, sales
+  reconciliation, statement generation, dispute triage — all logged to deal_events.
+- Gemini proposes, deterministic domain code disposes: agent output is always
+  reconciled against the pure rev-share function before money moves.
+- Revenue during contest = paid settlement reports / pilots (Stripe Payment Links,
+  no fund-holding). Live escrow only if Stripe Connect approval lands in time.
+- E-sign temporarily = click-sign + content hash + email receipt (Dropbox Sign and
+  G2 lawyer gate resume after the contest).
+- Internal submission target **2026-08-16** (HK deadline 08-18 04:00).
+
 ## Status
 
 - [x] proposal.md written

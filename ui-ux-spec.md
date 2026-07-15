@@ -140,6 +140,14 @@ console (desktop-first; see §5).
 - **States:** empty (queue clear ✓), loading, error; every destructive action = confirm modal with event-log preview.
 - **Nav:** separate authed area (admin role only); not linked from user UI.
 
+### S15 — AI Settlement Agent console (hackathon E8; NEW 2026-07-15)
+- **Purpose:** make the Gemini agent's work visible — the "AI is live in production making decisions" evidence screen for XPRIZE, and a trust surface for users.
+- **Key components:** agent activity feed (chronological cards: "Contract parsed → 4 settlement rules extracted ✓", "July CSV reconciled → 1 discrepancy flagged", "Statement #007 generated"), each card expandable to show input→reasoning→output + a "verified against domain math ✓" chip; pending-review queue (human confirms extracted rules once per deal); Gemini badge; link to full agent event log.
+- **Primary actions:** confirm/correct extracted rules; open generated statement; re-run reconciliation.
+- **States:** empty ("agent has no tasks yet"), running (streaming card), error (agent failure falls back to manual with clear notice), flagged (discrepancy card in amber/red).
+- **Nav:** tab inside S07 deal hub + global "Agent" item in sidebar (S03).
+- **Minimum-change note:** implemented as a new tab in S07 + one sidebar entry — existing screens only gain small "AI-verified" chips (S06 terms panel, S09 reconciliation card).
+
 ## 4. Cross-screen systems
 
 - **Clock chips:** one shared component; color ramps (neutral → amber ≤3d → red ≤24h); always shows what expires and what happens then.
