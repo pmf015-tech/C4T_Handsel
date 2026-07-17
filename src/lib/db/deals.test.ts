@@ -6,6 +6,7 @@ import {
   createTermSheetVersion,
   findDealForParty,
   findSharedTermSheet,
+  listDealsForUser,
   parseDealSummary,
   parseTermSheetVersion,
   saveDealDraft,
@@ -212,6 +213,39 @@ describe("findDealForParty", () => {
     expect(result).toMatchObject({
       milestones: [{ position: 1, amountMinorUnits: 250_000 }],
     });
+  });
+});
+
+describe("listDealsForUser", () => {
+  it("lists only deals joined to the authenticated party", async () => {
+    const queries: RecordedQuery[] = [];
+    const sql = async (
+      strings: TemplateStringsArray,
+      ...values: readonly unknown[]
+    ) => {
+      const text = compactSql(strings);
+      queries.push({ text, values });
+      if (text.includes("from deals")) return [baseDealRow];
+      return [
+        {
+          id: "6f14f7e8-397d-4ba3-b460-76ac7d7e916d",
+          position: 1,
+          title: "Launch content",
+          amountMinorUnits: "250000",
+          dueAt: new Date("2026-08-01T00:00:00.000Z"),
+        },
+      ];
+    };
+
+    const deals = await Reflect.apply(listDealsForUser, undefined, [
+      sql,
+      "user_123",
+    ]);
+
+    expect(deals).toHaveLength(1);
+    expect(queries[0]?.text).toContain("join deal_parties p");
+    expect(queries[0]?.text).toContain("p.clerk_user_id = ?");
+    expect(deals[0]?.milestones[0]?.amountMinorUnits).toBe(250_000);
   });
 });
 

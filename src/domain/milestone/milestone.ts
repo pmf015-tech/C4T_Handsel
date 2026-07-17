@@ -31,11 +31,13 @@ export type MilestoneEvent = Readonly<{
   readonly eventType:
     | "MILESTONE_DELIVERED"
     | "MILESTONE_APPROVED"
+    | "MILESTONE_REJECTED"
     | "MILESTONE_AUTO_APPROVED"
     | "MILESTONE_FROZEN"
     | "MILESTONE_UNFROZEN";
   readonly actorRole: MilestonePartyRole | "system";
   readonly occurredAt: Date;
+  readonly reason?: string;
 }>;
 
 export type MilestoneTransition = Readonly<{
@@ -54,6 +56,13 @@ export class MilestoneRoleError extends Error {
   readonly name = "MilestoneRoleError";
   constructor(role: MilestonePartyRole, action: string) {
     super(`The ${role} party cannot ${action} a milestone.`);
+  }
+}
+
+export class InvalidMilestoneRejectionReasonError extends Error {
+  readonly name = "InvalidMilestoneRejectionReasonError";
+  constructor() {
+    super("A rejection reason between 2 and 500 characters is required.");
   }
 }
 
@@ -93,6 +102,34 @@ export function approveMilestone(
       eventType: "MILESTONE_APPROVED",
       actorRole,
       occurredAt: now,
+    },
+  };
+}
+
+export function rejectMilestone(
+  milestone: MilestoneProjection,
+  actorRole: MilestonePartyRole,
+  reason: string,
+  now: Date,
+): MilestoneTransition {
+  if (actorRole !== "brand") throw new MilestoneRoleError(actorRole, "reject");
+  const normalizedReason = reason.trim();
+  if (normalizedReason.length < 2 || normalizedReason.length > 500)
+    throw new InvalidMilestoneRejectionReasonError();
+  if (milestone.state !== "DELIVERED")
+    throw new InvalidMilestoneTransitionError(milestone.state, "reject");
+  return {
+    milestone: {
+      ...milestone,
+      state: "PENDING",
+      deliveredAt: null,
+      approvedAt: null,
+    },
+    event: {
+      eventType: "MILESTONE_REJECTED",
+      actorRole,
+      occurredAt: now,
+      reason: normalizedReason,
     },
   };
 }

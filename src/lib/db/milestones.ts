@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   approveMilestone,
   deliverMilestone,
+  rejectMilestone,
   type MilestonePartyRole,
   type MilestoneProjection,
   type MilestoneTransition,
@@ -76,7 +77,11 @@ async function persistTransition(
     await transaction`
       insert into deal_events (id, deal_id, event_type, actor_clerk_user_id, payload)
       values (${randomUUID()}, ${dealId}, ${event.eventType}, ${clerkUserId},
-        ${transaction.json({ milestoneId: milestone.id, state: milestone.state })})
+        ${transaction.json({
+          milestoneId: milestone.id,
+          state: milestone.state,
+          ...(event.reason ? { reason: event.reason } : {}),
+        })})
     `;
   return milestone;
 }
@@ -138,6 +143,24 @@ export async function markMilestoneApproved(
     milestoneId,
     clerkUserId,
     (milestone, role, at) => approveMilestone(milestone, role, at),
+    now,
+  );
+}
+
+export async function markMilestoneRejected(
+  sql: Sql,
+  dealId: string,
+  milestoneId: string,
+  clerkUserId: string,
+  reason: string,
+  now = new Date(),
+): Promise<MilestoneProjection> {
+  return transitionMilestone(
+    sql,
+    dealId,
+    milestoneId,
+    clerkUserId,
+    (milestone, role, at) => rejectMilestone(milestone, role, reason, at),
     now,
   );
 }

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getDatabase } from "@/lib/db/client";
 import { findSharedTermSheet } from "@/lib/db/deals";
 import { PUBLIC_TERM_SHEET_COPY } from "@/lib/i18n/deals";
+import { ClockChip } from "../../deals/clock-chip";
 import { ShareTokenSchema } from "@/lib/terms/share-token";
 import styles from "../../deals/deals.module.css";
 
@@ -64,6 +65,17 @@ export default async function SharedTermSheetPage({
           HANDSEL 信約 · TERM SHEET / 條款書 · v{termSheet.versionNumber}
         </p>
         <h1>{content.title}</h1>
+        <div className={styles.shareMeta}>
+          <span>Offer expires / 條款書到期：</span>
+          <ClockChip deadline={termSheet.expiresAt.toISOString()} />
+        </div>
+        {termSheet.latestVersionNumber > termSheet.versionNumber ? (
+          <p className={styles.staleBanner} role="status">
+            You are viewing v{termSheet.versionNumber}; v
+            {termSheet.latestVersionNumber} is available. / 你而家睇緊 v
+            {termSheet.versionNumber}，最新係 v{termSheet.latestVersionNumber}。
+          </p>
+        ) : null}
         <p>Counterparty / 合作對方：{content.counterpartyName}</p>
         <hr />
         <p>
@@ -132,6 +144,12 @@ export default async function SharedTermSheetPage({
           This version is content-hashed and immutable. /
           呢個版本已作內容雜湊並不可修改。
         </p>
+        <a
+          className={styles.acceptLink}
+          href={`/sign-in?redirect_url=/deals/${content.dealId}/contract`}
+        >
+          Accept & proceed / 接受並繼續 →
+        </a>
       </article>
     </main>
   );

@@ -27,6 +27,9 @@ export const DEAL_COPY = {
     milestoneFrozen: "Frozen · dispute open",
     milestoneDeliver: "Mark delivered",
     milestoneApprove: "Approve deliverable",
+    milestoneReject: "Reject with reason",
+    milestoneRejectReason: "Reason for rejection",
+    milestoneRejectConfirm: "Send rejection",
     milestoneWorking: "Working…",
     milestoneRoleError: "Your role cannot take this action.",
     milestoneStateError: "This milestone is not in a state for that.",
@@ -77,6 +80,9 @@ export const DEAL_COPY = {
     milestoneFrozen: "已凍結 · 爭議處理中",
     milestoneDeliver: "標記為已交付",
     milestoneApprove: "批核交付內容",
+    milestoneReject: "要求修改並附原因",
+    milestoneRejectReason: "要求修改原因",
+    milestoneRejectConfirm: "發送修改要求",
     milestoneWorking: "處理緊…",
     milestoneRoleError: "你嘅角色唔可以做呢個動作。",
     milestoneStateError: "呢個里程碑而家嘅狀態唔容許呢個動作。",
@@ -142,6 +148,10 @@ export const CONTRACT_COPY = {
       "Revision creates a new immutable version and resets signatures.",
     receipt: "Signature receipt recorded in the event log.",
     latest: "Latest version is the only signable version.",
+    revisionWarning:
+      "All existing signatures will be reset when you revise these terms.",
+    confirmRevision: "Continue to revision",
+    cancelRevision: "Keep this version",
     error: "We could not load this contract.",
   },
   "zh-Hant": {
@@ -164,6 +174,106 @@ export const CONTRACT_COPY = {
     revisionHint: "修訂會建立新嘅不可變版本，並重設簽署。",
     receipt: "簽署收據已寫入 event log。",
     latest: "只有最新版本可以簽署。",
+    revisionWarning: "修訂條款會重設現有簽署，對方需要重新檢查。",
+    confirmRevision: "繼續修訂",
+    cancelRevision: "保留呢個版本",
     error: "未能載入呢份合約。",
   },
+} as const;
+
+export const ACTIVITY_COPY = {
+  DEAL_DRAFT_CREATED: {
+    en: "Deal draft created",
+    zhHant: "合作草稿已建立",
+  },
+  TERM_SHEET_VERSION_CREATED: {
+    en: "Term sheet version generated",
+    zhHant: "條款書版本已產生",
+  },
+  CONTRACT_VERSION_CREATED: {
+    en: "Contract version created",
+    zhHant: "合約版本已建立",
+  },
+  CONTRACT_INVITE_CREATED: {
+    en: "Counterparty invite created",
+    zhHant: "合作對方邀請已建立",
+  },
+  CONTRACT_INVITE_ACCEPTED: {
+    en: "Counterparty joined the deal",
+    zhHant: "合作對方已加入合作",
+  },
+  CONTRACT_SIGNATURE_CREATED: {
+    en: "A party signed the contract",
+    zhHant: "一方已簽署合約",
+  },
+  CONTRACT_SIGNATURES_RESET: {
+    en: "Contract signatures reset for a new version",
+    zhHant: "新版本已重設雙方簽署",
+  },
+  DEAL_FULLY_SIGNED: {
+    en: "Both parties signed the deal",
+    zhHant: "雙方已完成簽署",
+  },
+  DEAL_TERMS_REVISED: {
+    en: "Deal terms revised",
+    zhHant: "合作條款已修訂",
+  },
+  MILESTONE_DELIVERED: {
+    en: "Milestone delivered",
+    zhHant: "里程碑已交付",
+  },
+  MILESTONE_APPROVED: {
+    en: "Milestone approved",
+    zhHant: "里程碑已批核",
+  },
+  MILESTONE_AUTO_APPROVED: {
+    en: "Milestone auto-approved after the review window",
+    zhHant: "審核期限過後，里程碑已自動批核",
+  },
+  MILESTONE_FROZEN: {
+    en: "Milestone frozen while a dispute is open",
+    zhHant: "爭議處理期間，里程碑已凍結",
+  },
+  MILESTONE_UNFROZEN: {
+    en: "Milestone unfrozen after dispute resolution",
+    zhHant: "爭議解決後，里程碑已解除凍結",
+  },
+  SALES_REPORT_SUBMITTED: {
+    en: "Sales report submitted",
+    zhHant: "銷售報告已提交",
+  },
+  LATE_DISPUTE_TRIGGERED: {
+    en: "Two consecutive late reports triggered a dispute review",
+    zhHant: "連續兩期遲交報告，已觸發爭議檢查",
+  },
+  UNKNOWN: {
+    en: "Deal activity recorded",
+    zhHant: "合作活動已記錄",
+  },
+  EMPTY: {
+    en: "No activity has been recorded yet.",
+    zhHant: "暫時未有活動紀錄。",
+  },
+} as const;
+
+export const SALES_REPORT_COPY = {
+  title: "Sales reports / 銷售報告",
+  body: "Brand-reported sales are reconciled before any money moves. / 品牌提交嘅銷售數據會喺任何款項移動前先完成對賬。",
+  formTitle: "Submit a monthly report / 提交每月報告",
+  periodEnd: "Period end / 期末日",
+  units: "Units sold / 銷售數量",
+  grossRevenue: "Gross revenue (whole units) / 總收入（整數單位）",
+  preview: "Live reconciliation preview / 即時對賬預覽",
+  previewHint:
+    "Enter gross revenue to preview the exact split. / 輸入總收入後預覽準確分成。",
+  creatorShare: "Creator share / 創作者分成",
+  brandShare: "Brand share / 品牌分成",
+  submit: "Submit report / 提交報告",
+  submitting: "Submitting… / 提交緊…",
+  history: "Report history / 報告紀錄",
+  empty: "No sales reports yet. / 暫時未有銷售報告。",
+  brandCanSubmit: "Brand can submit / 品牌可提交",
+  creatorReadOnly: "Read-only view / 只讀檢視",
+  creatorNotice:
+    "The brand submits reports; you can review the exact computed share here. / 由品牌提交報告；你可以喺呢度檢查準確分成。",
 } as const;

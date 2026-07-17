@@ -58,6 +58,8 @@ const DealSummarySchema = z.object({
         state: z
           .enum(["PENDING", "DELIVERED", "APPROVED", "FROZEN"])
           .default("PENDING"),
+        deliveredAt: z.coerce.date().nullable().default(null),
+        approvedAt: z.coerce.date().nullable().default(null),
       }),
     )
     .max(20)
@@ -74,6 +76,7 @@ const TermSheetVersionSchema = z.object({
   shareToken: ShareTokenSchema,
   content: TermSheetContentSchema,
   expiresAt: z.date(),
+  latestVersionNumber: z.number().int().positive().default(1),
   createdAt: z.date(),
 });
 
@@ -178,12 +181,61 @@ export async function findDealForParty(
       title,
       amount_minor_units as "amountMinorUnits",
       due_date as "dueAt",
-      state
+      state,
+      delivered_at as "deliveredAt",
+      approved_at as "approvedAt"
     from deal_milestones
     where deal_id = ${dealId}
     order by position asc
   `;
   return parseDealSummary({ ...row, milestones });
+}
+
+/** Dashboard read: every returned row is scoped by the authenticated party join. */
+export async function listDealsForUser(
+  sql: Sql,
+  clerkUserId: string,
+): Promise<readonly DealSummary[]> {
+  const rows = await sql`
+    select
+      d.id,
+      d.title,
+      d.counterparty_name as "counterpartyName",
+      d.currency,
+      d.creator_share_basis_points as "creatorShareBasisPoints",
+      d.projected_revenue_minor_units as "projectedRevenueMinorUnits",
+      d.total_milestone_amount_minor_units as "totalMilestoneAmountMinorUnits",
+      d.dispute_clause as "disputeClause",
+      d.state,
+      d.created_by_clerk_user_id as "createdByClerkUserId",
+      p.role as "viewerRole",
+      d.created_at as "createdAt",
+      d.updated_at as "updatedAt"
+    from deals d
+    join deal_parties p
+      on p.deal_id = d.id
+      and p.clerk_user_id = ${clerkUserId}
+    order by d.updated_at desc
+  `;
+  return Promise.all(
+    rows.map(async (row) => {
+      const milestones = await sql`
+        select
+          id,
+          position,
+          title,
+          amount_minor_units as "amountMinorUnits",
+          due_date as "dueAt",
+          state,
+          delivered_at as "deliveredAt",
+          approved_at as "approvedAt"
+        from deal_milestones
+        where deal_id = ${row.id}
+        order by position asc
+      `;
+      return parseDealSummary({ ...row, milestones });
+    }),
+  );
 }
 
 /**
@@ -275,6 +327,7 @@ export async function findSharedTermSheet(
       content_hash as "contentHash",
       content,
       expires_at as "expiresAt",
+      (select max(latest.version_number) from term_sheet_versions latest where latest.deal_id = term_sheet_versions.deal_id) as "latestVersionNumber",
       created_at as "createdAt"
     from term_sheet_versions
     where share_token_hash = ${shareTokenHash}

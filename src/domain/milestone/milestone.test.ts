@@ -4,6 +4,7 @@ import {
   InvalidMilestoneTransitionError,
   MilestoneRoleError,
   approveMilestone,
+  rejectMilestone,
   autoApproveMilestone,
   deliverMilestone,
   freezeMilestone,
@@ -86,6 +87,38 @@ describe("approveMilestone", () => {
     expect(() =>
       approveMilestone(pendingMilestone(), "brand", new Date()),
     ).toThrow(InvalidMilestoneTransitionError);
+  });
+});
+
+describe("rejectMilestone", () => {
+  it("returns a delivered milestone to pending with a reason", () => {
+    const now = new Date("2026-07-18T10:00:00Z");
+    const result = rejectMilestone(
+      deliveredMilestone(new Date("2026-07-17T10:00:00Z")),
+      "brand",
+      "Please attach the final product link.",
+      now,
+    );
+
+    expect(result.milestone).toMatchObject({
+      state: "PENDING",
+      deliveredAt: null,
+    });
+    expect(result.event).toMatchObject({
+      eventType: "MILESTONE_REJECTED",
+      reason: "Please attach the final product link.",
+    });
+  });
+
+  it("rejects a blank reason and non-brand actor", () => {
+    const delivered = deliveredMilestone(new Date("2026-07-17T10:00:00Z"));
+    const now = new Date("2026-07-18T10:00:00Z");
+    expect(() => rejectMilestone(delivered, "brand", " ", now)).toThrowError(
+      /reason/i,
+    );
+    expect(() =>
+      rejectMilestone(delivered, "creator", "Needs changes", now),
+    ).toThrowError(MilestoneRoleError);
   });
 });
 

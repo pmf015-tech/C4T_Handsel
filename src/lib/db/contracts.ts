@@ -25,6 +25,13 @@ const ContractVersionRowSchema = z.object({
   createdAt: z.coerce.date(),
 });
 
+const ContractHistoryItemSchema = z.object({
+  versionNumber: z.number().int().positive(),
+  contentHash: z.string().length(64),
+  signingExpiresAt: z.coerce.date(),
+  createdAt: z.coerce.date(),
+});
+
 export type ContractVersion = Readonly<
   z.infer<typeof ContractVersionRowSchema>
 >;
@@ -34,8 +41,12 @@ export type ContractSignature = Readonly<{
   readonly contentHash: string;
   readonly signedAt: Date;
 }>;
+export type ContractHistoryItem = Readonly<
+  z.infer<typeof ContractHistoryItemSchema>
+>;
 export type ContractView = Readonly<{
   readonly version: ContractVersion;
+  readonly history: readonly ContractHistoryItem[];
   readonly signatures: readonly ContractSignature[];
   readonly events: readonly Readonly<Record<string, unknown>>[];
 }>;
@@ -109,6 +120,19 @@ async function readContractView(
 ): Promise<ContractView | null> {
   const version = await findLatestVersion(sql, dealId);
   if (!version) return null;
+  const historyRows = await sql`
+    select
+      version_number as "versionNumber",
+      content_hash as "contentHash",
+      signing_expires_at as "signingExpiresAt",
+      created_at as "createdAt"
+    from contract_versions
+    where deal_id = ${dealId}
+    order by version_number desc
+  `;
+  const history = historyRows.map((row) =>
+    ContractHistoryItemSchema.parse(row),
+  );
   const signatures = await sql<ContractSignature[]>`
     select party_role as "partyRole", clerk_user_id as "clerkUserId",
       content_hash as "contentHash", signed_at as "signedAt"
@@ -122,7 +146,7 @@ async function readContractView(
       and event_type in ('CONTRACT_VERSION_CREATED', 'CONTRACT_SIGNATURE_CREATED', 'DEAL_FULLY_SIGNED', 'CONTRACT_SIGNATURES_RESET')
     order by created_at asc
   `;
-  return { version, signatures, events };
+  return { version, history, signatures, events };
 }
 
 export async function createContractVersion(

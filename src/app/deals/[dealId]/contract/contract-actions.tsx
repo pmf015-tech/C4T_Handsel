@@ -6,20 +6,22 @@ import { useState } from "react";
 import type { ContractView } from "@/lib/db/contracts";
 import { CONTRACT_COPY } from "@/lib/i18n/deals";
 
-const copy = CONTRACT_COPY.en;
-
 export function ContractActions({
   dealId,
   userId,
   contract,
+  language,
 }: {
   readonly dealId: string;
   readonly userId: string;
   readonly contract: ContractView;
+  readonly language?: "en" | "zh-Hant";
 }) {
+  const copy = CONTRACT_COPY[language ?? "en"];
   const [current, setCurrent] = useState(contract);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [revisionPending, setRevisionPending] = useState(false);
   const signedByCurrentUser = current.signatures.some(
     (signature) => signature.clerkUserId === userId,
   );
@@ -86,8 +88,25 @@ export function ContractActions({
         <button disabled={busy} onClick={invite} type="button">
           {copy.invite}
         </button>
-        <a href={`/deals/${dealId}/revise`}>{copy.revision}</a>
+        <button
+          onClick={() => setRevisionPending(true)}
+          type="button"
+          disabled={busy}
+        >
+          {copy.revision}
+        </button>
       </div>
+      {revisionPending ? (
+        <div className="revisionWarning" role="alert">
+          <p>{copy.revisionWarning}</p>
+          <div className="contractButtons">
+            <a href={`/deals/${dealId}/revise`}>{copy.confirmRevision}</a>
+            <button onClick={() => setRevisionPending(false)} type="button">
+              {copy.cancelRevision}
+            </button>
+          </div>
+        </div>
+      ) : null}
       {message ? <p role="status">{message}</p> : null}
     </section>
   );

@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   getDatabase: vi.fn(),
   markMilestoneDelivered: vi.fn(),
   markMilestoneApproved: vi.fn(),
+  markMilestoneRejected: vi.fn(),
 }));
 
 vi.mock("@clerk/nextjs/server", () => ({ auth: mocks.auth }));
@@ -21,6 +22,7 @@ vi.mock("@/lib/db/milestones", () => ({
   MilestoneNotFoundError: class MilestoneNotFoundError extends Error {},
   markMilestoneDelivered: mocks.markMilestoneDelivered,
   markMilestoneApproved: mocks.markMilestoneApproved,
+  markMilestoneRejected: mocks.markMilestoneRejected,
 }));
 
 import { MilestoneNotFoundError } from "@/lib/db/milestones";
@@ -131,6 +133,40 @@ describe("POST /api/deals/[dealId]/milestones/[milestoneId]", () => {
       dealId,
       milestoneId,
       "user_brand",
+    );
+  });
+
+  it("rejects without a reason at the zod boundary", async () => {
+    mocks.auth.mockResolvedValue({ userId: "user_brand" });
+
+    const response = await POST(
+      post({ action: "reject", reason: " " }),
+      context,
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.markMilestoneRejected).not.toHaveBeenCalled();
+  });
+
+  it("sends a validated rejection reason through the domain adapter", async () => {
+    mocks.auth.mockResolvedValue({ userId: "user_brand" });
+    mocks.markMilestoneRejected.mockResolvedValue({
+      id: milestoneId,
+      state: "PENDING",
+    });
+
+    const response = await POST(
+      post({ action: "reject", reason: "Please add the final link." }),
+      context,
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.markMilestoneRejected).toHaveBeenCalledWith(
+      {},
+      dealId,
+      milestoneId,
+      "user_brand",
+      "Please add the final link.",
     );
   });
 });

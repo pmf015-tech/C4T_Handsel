@@ -121,6 +121,31 @@
   margin-top: 36px;
   color: var(--ink-700);
 }
+.shareMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-700);
+  font-size: 12px;
+}
+.staleBanner {
+  border: 1px solid #f0c77c;
+  border-radius: 10px;
+  background: #fff3df;
+  color: #8a5500;
+  padding: 12px 14px;
+}
+.acceptLink {
+  display: inline-flex;
+  margin-top: 18px;
+  min-height: 44px;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--blue-700);
+  color: var(--white);
+  padding: 0 16px;
+  font-weight: 800;
+}
 @media (max-width: 440px) {
   .publicPage {
     padding: 20px 14px;

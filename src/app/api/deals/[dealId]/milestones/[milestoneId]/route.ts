@@ -11,13 +11,21 @@ import {
   MilestoneNotFoundError,
   markMilestoneApproved,
   markMilestoneDelivered,
+  markMilestoneRejected,
 } from "@/lib/db/milestones";
 
 const ParamsSchema = z.object({
   dealId: z.string().uuid(),
   milestoneId: z.string().uuid(),
 });
-const BodySchema = z.object({ action: z.enum(["deliver", "approve"]) });
+const BodySchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("deliver") }),
+  z.object({ action: z.literal("approve") }),
+  z.object({
+    action: z.literal("reject"),
+    reason: z.string().trim().min(2).max(500),
+  }),
+]);
 
 export async function POST(
   request: Request,
@@ -40,16 +48,28 @@ export async function POST(
       { status: 400 },
     );
   try {
-    const run =
+    const milestone =
       body.data.action === "deliver"
-        ? markMilestoneDelivered
-        : markMilestoneApproved;
-    const milestone = await run(
-      getDatabase(),
-      params.data.dealId,
-      params.data.milestoneId,
-      userId,
-    );
+        ? await markMilestoneDelivered(
+            getDatabase(),
+            params.data.dealId,
+            params.data.milestoneId,
+            userId,
+          )
+        : body.data.action === "approve"
+          ? await markMilestoneApproved(
+              getDatabase(),
+              params.data.dealId,
+              params.data.milestoneId,
+              userId,
+            )
+          : await markMilestoneRejected(
+              getDatabase(),
+              params.data.dealId,
+              params.data.milestoneId,
+              userId,
+              body.data.reason,
+            );
     return NextResponse.json({ ok: true, milestone });
   } catch (error) {
     // Non-party and unknown milestone collapse to the same 404: an attacker
