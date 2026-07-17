@@ -16,11 +16,8 @@ E4 → E5/E7. E6, E1, and **E2 in full** (two-party click-sign _and_ the redline
 loop) are verified with real browser + database evidence. **E3 is functional**
 for milestone deliver/approve; its settlement half (sales-report submission UI
 and rev-share payout wiring) is domain-complete but not yet wired to a screen.
-The next slice is **E8 Vertex AI Gemini Settlement Agent** — not Stripe.
-E3 milestone tracking is now wired end to end (migration → adapter → API → UI)
-and browser-verified for the creator side. Its settlement half (sales-report
-submission screen, rev-share payout wiring) is domain-complete but has no
-screen yet.
+E3 milestone tracking is wired end to end (migration → adapter → API → UI). The
+next slice is **E8 Vertex AI Gemini Settlement Agent** — not Stripe.
 
 | Area                           | Current evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Status                             |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
