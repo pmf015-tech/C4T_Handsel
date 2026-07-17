@@ -1,0 +1,9 @@
+src/app/globals.css
+src/app/prototype-data.ts
+src/app/prototype-shared.tsx
+src/app/prototype-views.tsx
+src/app/prototype.css
+src/app/prototype.tsx
+src/domain/deal/types.ts
+src/domain/README.md
+db/migrations/README.md

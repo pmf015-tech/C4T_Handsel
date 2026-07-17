@@ -1,16 +1,21 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Handsel 信約",
+  title: "Handsel | Every promise, made verifiable",
   description:
-    "Deal-to-payout platform for creator × brand product-line partnerships.",
+    "Handsel turns creator-brand partnerships into clear contracts, tracked milestones, and confident payouts. A product under C4T Center For Transformation.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="zh-Hant">
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -1,0 +1,196 @@
+.page {
+  min-height: 100vh;
+  background: var(--sky-50);
+  padding: 32px 20px 72px;
+}
+.shell {
+  width: min(100%, 980px);
+  margin: 0 auto;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 42px;
+}
+.back {
+  color: var(--blue-700);
+  font-size: 14px;
+  font-weight: 700;
+}
+.language {
+  color: var(--ink-700);
+  font-size: 13px;
+}
+.language button {
+  border: 0;
+  background: transparent;
+  color: var(--blue-700);
+  font-weight: 700;
+  padding: 0 4px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  gap: 28px;
+  align-items: start;
+}
+.intro {
+  padding: 16px 0;
+}
+.eyebrow {
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+.intro h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(40px, 6vw, 68px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  margin: 18px 0;
+}
+.intro p {
+  max-width: 520px;
+  color: var(--ink-700);
+  font-size: 17px;
+  line-height: 1.65;
+}
+.card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--white);
+  padding: 28px;
+  box-shadow: 0 18px 48px rgb(22 52 104 / 8%);
+}
+.form {
+  display: grid;
+  gap: 18px;
+}
+.form label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink-950);
+  font-size: 13px;
+  font-weight: 700;
+}
+.form input,
+.form select {
+  min-height: 46px;
+  width: 100%;
+  border: 1px solid #b9c8e5;
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--ink-950);
+  background: var(--white);
+}
+.form input:focus,
+.form select:focus {
+  outline: 3px solid rgb(47 103 216 / 18%);
+  border-color: var(--blue-500);
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.milestones {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  display: grid;
+  gap: 14px;
+}
+.milestoneHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.milestoneHeading h2 {
+  font-size: 15px;
+  margin: 0;
+}
+.milestoneHeading span {
+  color: var(--ink-700);
+  font-size: 12px;
+}
+.milestone {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+.milestone legend {
+  padding: 0 6px;
+  color: var(--blue-700);
+  font-size: 13px;
+  font-weight: 800;
+}
+.addMilestone,
+.removeMilestone {
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.addMilestone {
+  border: 1px solid var(--blue-700);
+  background: var(--white);
+  color: var(--blue-700);
+}
+.removeMilestone {
+  justify-self: start;
+  border: 0;
+  background: transparent;
+  color: var(--blue-700);
+  padding-inline: 0;
+}
+.addMilestone:disabled,
+.removeMilestone:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.submit {
+  min-height: 50px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue-700);
+  color: var(--white);
+  font-weight: 800;
+}
+.submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.error {
+  color: #a51f1f;
+  font-size: 13px;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .intro {
+    padding-top: 0;
+  }
+  .topbar {
+    margin-bottom: 28px;
+  }
+}
+@media (max-width: 440px) {
+  .page {
+    padding-inline: 14px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

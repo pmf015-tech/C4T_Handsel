@@ -1,0 +1,126 @@
+.page {
+  min-height: 100vh;
+  background: var(--sky-50);
+  padding: 40px 20px 80px;
+}
+.shell {
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
+.shell > a {
+  color: var(--blue-700);
+  font-size: 14px;
+  font-weight: 700;
+}
+.eyebrow {
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  margin-top: 44px;
+}
+.shell h1 {
+  max-width: 650px;
+  font-family: Georgia, serif;
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+  margin: 18px 0;
+}
+.intro {
+  color: var(--ink-700);
+  max-width: 620px;
+}
+.card {
+  margin-top: 32px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--white);
+  padding: 28px;
+  box-shadow: 0 18px 48px rgb(22 52 104 / 8%);
+}
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+}
+.meta div {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.meta small,
+.hash small {
+  color: var(--ink-700);
+  font-size: 11px;
+  font-weight: 700;
+}
+.meta strong {
+  overflow-wrap: anywhere;
+}
+.hash {
+  display: grid;
+  gap: 6px;
+  margin-top: 22px;
+}
+.hash code {
+  color: var(--blue-700);
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.card > p {
+  color: var(--ink-700);
+}
+.contractActions {
+  margin-top: 30px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+.contractStatus h2 {
+  font-size: 18px;
+}
+.contractStatus p {
+  color: var(--ink-700);
+  margin: 6px 0;
+}
+.contractButtons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.contractButtons button,
+.contractButtons a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--blue-700);
+  border-radius: 8px;
+  padding: 0 16px;
+  color: var(--blue-700);
+  background: var(--white);
+  font-weight: 700;
+}
+.contractButtons button:first-child {
+  color: var(--white);
+  background: var(--blue-700);
+}
+.contractButtons button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+@media (max-width: 560px) {
+  .page {
+    padding-inline: 14px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .meta {
+    grid-template-columns: 1fr;
+  }
+}

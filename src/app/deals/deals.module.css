@@ -1,0 +1,137 @@
+.submit {
+  min-height: 50px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue-700);
+  color: var(--white);
+  font-weight: 800;
+}
+.submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.error {
+  color: #a51f1f;
+  font-size: 13px;
+  margin: 0;
+}
+.notice {
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #e5f7ed;
+  color: #176f4d;
+  font-size: 13px;
+}
+.events {
+  margin-top: 28px;
+}
+.events h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.events p {
+  color: var(--ink-700);
+}
+.publicMilestones {
+  margin-top: 28px;
+}
+.publicMilestones h2 {
+  font-size: 18px;
+}
+.milestoneList {
+  display: grid;
+  gap: 12px;
+}
+.milestoneDetail {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--white);
+}
+.milestoneNumber {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--blue-100);
+  color: var(--blue-700);
+  font-weight: 800;
+}
+.milestoneSummary h3 {
+  margin: 4px 0 12px;
+  font-size: 16px;
+}
+.milestoneSummary dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.milestoneSummary dt {
+  color: var(--ink-700);
+  font-size: 11px;
+  font-weight: 700;
+}
+.milestoneSummary dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 700;
+}
+.publicPage {
+  min-height: 100vh;
+  background: var(--sky-50);
+  padding: 48px 20px;
+}
+.termSheet {
+  max-width: 760px;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--white);
+  padding: 48px;
+  box-shadow: 0 18px 48px rgb(22 52 104 / 8%);
+}
+.termSheetEyebrow {
+  color: var(--blue-700);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.termSheet h1 {
+  font-family: Georgia, serif;
+  font-size: 42px;
+  font-weight: 400;
+}
+.termSheet hr {
+  margin: 28px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.emptyMilestones {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--ink-700);
+}
+.immutableNote {
+  margin-top: 36px;
+  color: var(--ink-700);
+}
+@media (max-width: 440px) {
+  .publicPage {
+    padding: 20px 14px;
+  }
+  .termSheet {
+    padding: 24px 20px;
+  }
+  .termSheet h1 {
+    font-size: 36px;
+  }
+  .milestoneSummary dl {
+    grid-template-columns: 1fr;
+  }
+}
