@@ -2,7 +2,10 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 
 import { getDatabase } from "@/lib/db/client";
-import { findContractForParty } from "@/lib/db/contracts";
+import {
+  createContractVersion,
+  findContractForParty,
+} from "@/lib/db/contracts";
 import { CONTRACT_COPY } from "@/lib/i18n/deals";
 import { ContractActions } from "./contract-actions";
 import styles from "./contract.module.css";
@@ -17,7 +20,9 @@ export default async function ContractPage({
   const { userId } = await auth();
   const { dealId } = await params;
   if (!userId) redirect(`/sign-in?redirect_url=/deals/${dealId}/contract`);
-  const contract = await findContractForParty(getDatabase(), dealId, userId);
+  const contract =
+    (await findContractForParty(getDatabase(), dealId, userId)) ??
+    (await createContractVersion(getDatabase(), dealId, userId));
   if (!contract) notFound();
   return (
     <main className={styles.page}>
