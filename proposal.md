@@ -12,25 +12,27 @@
 ### Current stage
 
 **Stage 4 — Building.** The approved slice order is E6 → E1 → E2 → E3 → E8 →
-E4 → E5/E7. E6, E1, and the E2 two-party click-sign journey are now verified
-with real browser + database evidence (see below). The redline half of E2
-(acceptance criterion 3 in `spec-handsel-mvp.md`) cannot be exercised yet: no
-deal-terms edit mutation or UI exists, so every regenerated term sheet hashes
-identical to v1 and `RedlineHashUnchangedError` blocks it. Founder decision
-2026-07-17: skip redline verification for now and proceed to **E3 settlement
-core** with failing-first domain tests; redline UI is deferred, not blocking.
+E4 → E5/E7. E6, E1, and **E2 in full** (two-party click-sign _and_ the redline
+loop) are verified with real browser + database evidence. **E3 is functional**
+for milestone deliver/approve; its settlement half (sales-report submission UI
+and rev-share payout wiring) is domain-complete but not yet wired to a screen.
+The next slice is **E8 Vertex AI Gemini Settlement Agent** — not Stripe.
+E3 milestone tracking is now wired end to end (migration → adapter → API → UI)
+and browser-verified for the creator side. Its settlement half (sales-report
+submission screen, rev-share payout wiring) is domain-complete but has no
+screen yet.
 
-| Area                           | Current evidence                                                                                                                                                                                                                                                                                                                      | Status                                  |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Foundation                     | Next.js 15, strict TypeScript, Postgres `postgres` driver, Clerk, zod, Vitest, Playwright, numbered migrations, and GitHub Actions CI are present.                                                                                                                                                                                    | Implemented locally                     |
-| E6 auth + profiles             | Clerk development instance is linked; `/onboarding` writes a server-authenticated profile and `/dashboard` requires one. A real creator onboarding → Postgres profile → dashboard flow was manually verified.                                                                                                                         | Functional in development               |
-| Landing auth                   | `/` exposes real Clerk `Sign in` / `Get started` controls when signed out and `UserButton` when signed in. `/sign-in` and `/sign-up` routes exist.                                                                                                                                                                                    | Functional in development               |
-| E1 deal builder + term sheet   | `/deals/new` validates and persists a draft; immutable term-sheet versions, append-only `deal_events`, 14-day hashed share links, and `/s/[shareToken]` exist.                                                                                                                                                                        | Functional locally                      |
-| E2 click-sign + redline        | Two-party click-sign (create → invite → accept → both signatures → `SIGNED`) verified live in-browser with two Clerk identities, with matching `deal_events`/`deal_parties`/`contract_signatures` rows. Redline reset logic exists in `src/lib/db/contracts.ts` but has no edit-terms UI to trigger it from a genuinely different v2. | Click-sign verified; redline UI missing |
-| E3 milestones + reconciliation | Only the milestone schema/builder inputs exist; no real deliver/approve/report/dispute flow yet.                                                                                                                                                                                                                                      | Not started                             |
-| E8 Gemini Settlement Agent     | Prototype displays S06/S07/S09/S15-style AI surfaces only. No Vertex AI SDK adapter, agent run persistence, or production Gemini call exists.                                                                                                                                                                                         | Not started                             |
-| E4 payments                    | No Stripe Payment Link, Connect, webhook, or reconciliation adapter exists.                                                                                                                                                                                                                                                           | Not started                             |
-| Production                     | `handseltrust.tech` registration was reported by the owner, but DNS, Vercel deployment, Clerk production instance, Stripe KYC, and Vertex configuration are not verified in this repository.                                                                                                                                          | External work pending                   |
+| Area                           | Current evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Status                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Foundation                     | Next.js 15, strict TypeScript, Postgres `postgres` driver, Clerk, zod, Vitest, Playwright, numbered migrations, and GitHub Actions CI are present.                                                                                                                                                                                                                                                                                                                              | Implemented locally                |
+| E6 auth + profiles             | Clerk development instance is linked; `/onboarding` writes a server-authenticated profile and `/dashboard` requires one. A real creator onboarding → Postgres profile → dashboard flow was manually verified.                                                                                                                                                                                                                                                                   | Functional in development          |
+| Landing auth                   | `/` exposes real Clerk `Sign in` / `Get started` controls when signed out and `UserButton` when signed in. `/sign-in` and `/sign-up` routes exist.                                                                                                                                                                                                                                                                                                                              | Functional in development          |
+| E1 deal builder + term sheet   | `/deals/new` validates and persists a draft; immutable term-sheet versions, append-only `deal_events`, 14-day hashed share links, and `/s/[shareToken]` exist.                                                                                                                                                                                                                                                                                                                  | Functional locally                 |
+| E2 click-sign + redline        | Two-party click-sign verified live with two Clerk identities. **Redline now verified end-to-end**: signed v1 → revise 20%→30% → contract v2 with a new hash, signature reset to Waiting, deal back to `NEGOTIATING`, events `DEAL_TERMS_REVISED → TERM_SHEET_VERSION_CREATED → CONTRACT_SIGNATURES_RESET`. `reviseDealTerms` performs terms + term-sheet + redline in ONE transaction.                                                                                          | Verified (contest-mode click-sign) |
+| E3 milestones + reconciliation | Migration 0008 (milestone state columns + `sales_reports`), `src/lib/db/milestones.ts`, API, and deal-hub UI. Browser-verified: creator delivered → `DELIVERED` + event; creator calling approve → 403; unknown milestone id → 404. Pure domain complete: `money/revShare.ts` (13 tests), `milestone/milestone.ts` (16), `sales/lateness.ts` (11), `deal/revision.ts` (10) — all 100% coverage. **Brand-side approve not yet browser-verified; sales-report screen not built.** | Deliver verified; approve pending  |
+| E8 Gemini Settlement Agent     | Prototype displays S06/S07/S09/S15-style AI surfaces only. No Vertex AI SDK adapter, agent run persistence, or production Gemini call exists.                                                                                                                                                                                                                                                                                                                                   | Not started                        |
+| E4 payments                    | No Stripe Payment Link, Connect, webhook, or reconciliation adapter exists.                                                                                                                                                                                                                                                                                                                                                                                                     | Not started                        |
+| Production                     | `handseltrust.tech` registration was reported by the owner, but DNS, Vercel deployment, Clerk production instance, Stripe KYC, and Vertex configuration are not verified in this repository.                                                                                                                                                                                                                                                                                    | External work pending              |
 
 ### What a new agent must read first
 
@@ -96,6 +98,30 @@ decision: defer building an edit-terms UI; it is not on the E3 critical path.
 run or attempted; `isDedicatedTestDatabase()`-gated suites remain unexercised until a
 genuinely separate test database is configured.
 
+On 2026-07-17 (E3 first slice), added `src/domain/money/revShare.ts` +
+`revShare.test.ts` (pure, no I/O, no framework imports — matches the
+`src/domain` dependency rule). Failing-first TDD: wrote 13 tests (RED, module
+missing), then implemented `computeRevShare()` using BigInt internally for
+exact integer arithmetic (no floating point anywhere near money) and
+round-half-to-even ("banker's rounding") on the creator's share; the brand
+share is the exact remainder, so the two shares are proven to sum to the
+gross amount for a spread of `(gross, basisPoints)` pairs including 0, both
+extremes (0bp / 10000bp), and a near-`Number.MAX_SAFE_INTEGER` gross value.
+Two dedicated tests pin the round-half-to-even tie-break in both directions
+(`1 @ 5000bp → 0/1`, `3 @ 5000bp → 2/1`).
+
+- `npm test`: **17 test files / 77 tests passed** (was 16/64 before this
+  slice).
+- `npm run typecheck`: passed.
+- No trust boundary was touched (pure function, no DB/auth/webhook/payment
+  code), so no dedicated security review was required for this slice per
+  `security-gates.md`; the money-specific gate (integer minor units, proven
+  rounding rule) was self-checked directly against the test evidence above.
+- Not yet committed — this slice is isolated to
+  `src/domain/money/revShare.ts`, `src/domain/money/revShare.test.ts`, and
+  this `src/domain/README.md` status-table edit; recommend committing these
+  three files alone once reviewed.
+
 ### Safety and test constraints
 
 - Never reveal, copy, commit, or request Clerk, database, Stripe, Vertex, or browser-session secrets.
@@ -104,15 +130,47 @@ genuinely separate test database is configured.
 - CI has a PostgreSQL service, but its integration-test activation and full hosted run have not yet been independently verified. Treat CI success as unproven until a real GitHub Actions run is inspected.
 - E2 is contest/demo click-sign only until G2 legal review. E4 live escrow remains blocked by G3/Stripe approval and the two-pilot-pair gate.
 
+### E3 + E2-redline verification evidence (2026-07-17, later session)
+
+Run live in-browser at `http://localhost:3100` (the dev server is now pinned to
+a fixed port in `.claude/launch.json` so a restart no longer drops the Clerk
+session) against the local dev Postgres:
+
+- Creator delivered a milestone → `deal_milestones.state = 'DELIVERED'` with
+  `delivered_at`, and a `MILESTONE_DELIVERED` event appended.
+- Creator posting `{action:"approve"}` directly to the API → **403**. Hiding the
+  button in the UI is not the enforcement; the domain role check is.
+- Unknown milestone id under a real deal → **404**, so a non-party cannot learn
+  whether a milestone exists.
+- Revising a deal whose milestone was already delivered → **409 "a milestone has
+  already progressed"**. This guard prevented real data loss: a revision replaces
+  milestone rows, which would have destroyed the delivery record and timestamp.
+- On a clean deal: signed contract v1, revised creator share 20% → 30%, and got
+  contract **v2** with a different content hash, the creator signature reset to
+  Waiting, deal state back to `NEGOTIATING`, term sheets v1+v2, and the event
+  chain above.
+- The v1 signature row is deliberately retained. It is hash-bound to v1 and is an
+  audit fact ("the creator did sign v1 at time T"); deleting it would violate the
+  append-only rule. It is not an orphan — the UI reads signatures for the latest
+  version only, and signatures are keyed by `contract_version_id`.
+
+`npm test` (126), `npm run typecheck`, and `npm run build` pass. Note: running
+`npm run build` while the dev server is up overwrites `.next` and makes the dev
+server serve stale chunks — restart it after a build.
+
 ### Exact next action
 
-Start E3 (milestones + sales reconciliation) with failing-first Vitest domain tests:
-banker's-rounded rev-share pure function (`gross`, `%` → minor units, no floats, creator
-
-- brand shares sum exactly to the gross share pool), deliver/approve state transitions,
-  idempotent 7-day auto-approve, and the two-consecutive-late-report dispute freeze — per
-  `spec-handsel-mvp.md` E3 acceptance criteria. Build domain-first (`src/domain`, pure, no
-  I/O) before wiring `src/lib`/`src/app`. Do not start Stripe or Gemini work yet.
+Browser-verify the brand side of milestone approval: sign in as the second
+Clerk identity on the `Glow Ritual Product Line` deal
+(`0ecaa928-65d8-47c0-a7c6-f8c8baf3ae14`, milestone already `DELIVERED`), confirm
+the brand sees **Approve deliverable** where the creator does not, approve it,
+and check `deal_milestones.state = 'APPROVED'` with a `MILESTONE_APPROVED` event.
+That closes E3 milestone tracking. Then start **E8 (Vertex AI Gemini Settlement
+Agent)** — the contest's mandatory Gemini call and the AI-native centrepiece —
+before E4 Stripe. `agent_runs` persistence and zod-validated structured output
+reconciled against `computeRevShare()` are required from the first slice: Gemini
+proposes, the pure function decides.
+Do not start Stripe or Gemini work yet.
 
 ### Update and commit protocol
 
