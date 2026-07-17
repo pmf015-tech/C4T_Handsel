@@ -23,17 +23,44 @@ function FormInput({
   );
 }
 
-export function DealBuilderForm() {
+/** Prefilled terms turn the builder into the redline editor for an existing deal. */
+export type DealFormInitialValues = Readonly<{
+  readonly title: string;
+  readonly counterpartyName: string;
+  readonly currency: string;
+  readonly share: string;
+  readonly revenue: string;
+  readonly milestones: readonly MilestoneRow[];
+  readonly disputeClause: string;
+}>;
+
+type DealBuilderFormProps = Readonly<{
+  /** Existing deal id switches the form from create to redline. */
+  readonly dealId?: string;
+  readonly initial?: DealFormInitialValues;
+}>;
+
+export function DealBuilderForm({
+  dealId,
+  initial,
+}: DealBuilderFormProps = {}) {
+  const isRevision = dealId !== undefined;
   const [language, setLanguage] = useState<Language>("en");
-  const [title, setTitle] = useState("");
-  const [counterpartyName, setCounterpartyName] = useState("");
-  const [currency, setCurrency] = useState("HKD");
-  const [share, setShare] = useState("20");
-  const [revenue, setRevenue] = useState("");
-  const [milestones, setMilestones] = useState<readonly MilestoneRow[]>([
-    { title: "", amountWholeUnits: "", dueAt: isoDate() },
-  ]);
-  const [disputeClause, setDisputeClause] = useState("REFUND_BRAND");
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [counterpartyName, setCounterpartyName] = useState(
+    initial?.counterpartyName ?? "",
+  );
+  const [currency, setCurrency] = useState(initial?.currency ?? "HKD");
+  const [share, setShare] = useState(initial?.share ?? "20");
+  const [revenue, setRevenue] = useState(initial?.revenue ?? "");
+  const [milestones, setMilestones] = useState<readonly MilestoneRow[]>(
+    initial?.milestones ?? [
+      { title: "", amountWholeUnits: "", dueAt: isoDate() },
+    ],
+  );
+  const [disputeClause, setDisputeClause] = useState(
+    initial?.disputeClause ?? "REFUND_BRAND",
+  );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const copy = DEAL_COPY[language];
@@ -60,19 +87,32 @@ export function DealBuilderForm() {
     }
     setSaving(true);
     try {
-      const response = await ky.post("/api/deals", {
-        json: parsed.data,
-        throwHttpErrors: false,
-      });
+      const response = await ky.post(
+        isRevision ? `/api/deals/${dealId}/revise` : "/api/deals",
+        { json: parsed.data, throwHttpErrors: false },
+      );
       const result = (await response.json()) as {
         ok: boolean;
         deal?: { id: string };
-        message?: { en: string; zhHant: string };
+        message?: string | { en: string; zhHant: string };
       };
-      const message =
-        language === "en" ? result.message?.en : result.message?.zhHant;
-      if (!result.ok || !result.deal) {
+      if (!result.ok) {
+        const raw = result.message;
+        const message =
+          typeof raw === "string"
+            ? raw
+            : language === "en"
+              ? raw?.en
+              : raw?.zhHant;
         setError(message ?? copy.failure);
+        return;
+      }
+      if (isRevision) {
+        window.location.assign(`/deals/${dealId}/contract`);
+        return;
+      }
+      if (!result.deal) {
+        setError(copy.failure);
         return;
       }
       window.location.assign(`/deals/${result.deal.id}`);
@@ -87,7 +127,10 @@ export function DealBuilderForm() {
     <main className={styles.page}>
       <div className={styles.shell}>
         <div className={styles.topbar}>
-          <a className={styles.back} href="/dashboard">
+          <a
+            className={styles.back}
+            href={isRevision ? `/deals/${dealId}/contract` : "/dashboard"}
+          >
             ← {copy.back}
           </a>
           <span className={styles.language}>
@@ -102,9 +145,11 @@ export function DealBuilderForm() {
         </div>
         <div className={styles.grid}>
           <section className={styles.intro}>
-            <span className={styles.eyebrow}>{copy.eyebrow}</span>
-            <h1>{copy.title}</h1>
-            <p>{copy.body}</p>
+            <span className={styles.eyebrow}>
+              {isRevision ? copy.reviseEyebrow : copy.eyebrow}
+            </span>
+            <h1>{isRevision ? copy.reviseTitle : copy.title}</h1>
+            <p>{isRevision ? copy.reviseBody : copy.body}</p>
           </section>
           <section className={styles.card}>
             <form className={styles.form} onSubmit={submit}>
@@ -178,7 +223,13 @@ export function DealBuilderForm() {
                 </p>
               ) : null}
               <button className={styles.submit} disabled={saving} type="submit">
-                {saving ? copy.saving : copy.submit}
+                {isRevision
+                  ? saving
+                    ? copy.reviseSaving
+                    : copy.reviseSubmit
+                  : saving
+                    ? copy.saving
+                    : copy.submit}
               </button>
             </form>
           </section>

@@ -221,13 +221,19 @@ export async function signContract(
   });
 }
 
-export async function createRedlineVersion(
-  sql: Sql,
+/**
+ * Redline body without its own transaction, so a caller that must revise terms
+ * and reset signatures together (see reviseDealTerms) can run both in one
+ * transaction. A signed contract must never be observable alongside terms it
+ * no longer matches.
+ */
+export async function redlineContractInTransaction(
+  transaction: TransactionSql,
   dealId: string,
   clerkUserId: string,
   termSheetVersionId: string,
 ): Promise<ContractView> {
-  return sql.begin(async (transaction) => {
+  {
     const role = await findPartyRole(transaction, dealId, clerkUserId);
     const current = await readContractView(transaction, dealId);
     if (!role || !current) throw new ContractNotFoundError();
@@ -251,7 +257,23 @@ export async function createRedlineVersion(
     `;
     await transaction`update deals set state = 'NEGOTIATING', updated_at = now() where id = ${dealId}`;
     return readContractView(transaction, dealId) as Promise<ContractView>;
-  });
+  }
+}
+
+export async function createRedlineVersion(
+  sql: Sql,
+  dealId: string,
+  clerkUserId: string,
+  termSheetVersionId: string,
+): Promise<ContractView> {
+  return sql.begin((transaction) =>
+    redlineContractInTransaction(
+      transaction,
+      dealId,
+      clerkUserId,
+      termSheetVersionId,
+    ),
+  ) as Promise<ContractView>;
 }
 
 export async function exportContractAudit(
@@ -304,6 +326,11 @@ export async function acceptContractInvite(
     const invite = rows[0];
     if (!invite || new Date(invite.expiresAt).getTime() < Date.now())
       throw new ContractInviteNotFoundError();
+    const existingUser = await transaction`
+      select role from deal_parties where deal_id = ${invite.dealId} and clerk_user_id = ${clerkUserId}
+    `;
+    if (existingUser[0]?.role === "creator")
+      throw new ContractInviteRoleConflictError();
     const existingBrand = await transaction`
       select clerk_user_id from deal_parties where deal_id = ${invite.dealId} and role = 'brand'
     `;

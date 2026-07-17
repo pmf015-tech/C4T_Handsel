@@ -120,6 +120,54 @@
   font-size: 14px;
   font-weight: 700;
 }
+.milestoneActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.milestoneState {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  margin-right: auto;
+}
+.milestoneState span {
+  color: var(--ink-700);
+  font-size: 11px;
+  font-weight: 700;
+}
+.milestoneState strong {
+  font-size: 14px;
+}
+.milestoneActions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 18px;
+  background: var(--blue-700);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+.milestoneActions button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.milestoneActions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.milestoneActions [role="status"] {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ink-700);
+  font-size: 13px;
+}
 @media (max-width: 760px) {
   .topbar {
     margin-bottom: 28px;

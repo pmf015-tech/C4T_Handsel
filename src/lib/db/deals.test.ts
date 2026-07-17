@@ -22,6 +22,7 @@ const baseDealRow = {
   disputeClause: "REFUND_BRAND",
   state: "DRAFT",
   createdByClerkUserId: "user_123",
+  viewerRole: "creator",
   createdAt: new Date("2026-07-16T00:00:00.000Z"),
   updatedAt: new Date("2026-07-16T00:00:00.000Z"),
 };

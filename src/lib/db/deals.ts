@@ -43,6 +43,8 @@ const DealSummarySchema = z.object({
     "CANCELLED",
   ]),
   createdByClerkUserId: z.string(),
+  /** Role of the party this row was read for — drives role-symmetric UI. */
+  viewerRole: z.enum(["creator", "brand"]),
   createdAt: z.date(),
   updatedAt: z.date(),
   milestones: z
@@ -53,6 +55,9 @@ const DealSummarySchema = z.object({
         title: z.string().min(2).max(80),
         amountMinorUnits: MinorUnitsSchema,
         dueAt: z.coerce.date(),
+        state: z
+          .enum(["PENDING", "DELIVERED", "APPROVED", "FROZEN"])
+          .default("PENDING"),
       }),
     )
     .max(20)
@@ -156,6 +161,7 @@ export async function findDealForParty(
       d.dispute_clause as "disputeClause",
       d.state,
       d.created_by_clerk_user_id as "createdByClerkUserId",
+      p.role as "viewerRole",
       d.created_at as "createdAt",
       d.updated_at as "updatedAt"
     from deals d
@@ -171,7 +177,8 @@ export async function findDealForParty(
       position,
       title,
       amount_minor_units as "amountMinorUnits",
-      due_date as "dueAt"
+      due_date as "dueAt",
+      state
     from deal_milestones
     where deal_id = ${dealId}
     order by position asc
@@ -179,12 +186,16 @@ export async function findDealForParty(
   return parseDealSummary({ ...row, milestones });
 }
 
-export async function createTermSheetVersion(
-  sql: Sql,
+/**
+ * Term-sheet body without its own transaction, so reviseDealTerms can create
+ * the new version and reset the contract signatures atomically.
+ */
+export async function createTermSheetVersionInTransaction(
+  transaction: TransactionSql,
   dealId: string,
   clerkUserId: string,
 ): Promise<TermSheetVersion | null> {
-  return sql.begin(async (transaction) => {
+  {
     const deal = await findDealForParty(transaction, dealId, clerkUserId);
     if (!deal) return null;
 
@@ -234,7 +245,17 @@ export async function createTermSheetVersion(
       )
     `;
     return parseTermSheetVersion({ ...rows[0], shareToken });
-  });
+  }
+}
+
+export async function createTermSheetVersion(
+  sql: Sql,
+  dealId: string,
+  clerkUserId: string,
+): Promise<TermSheetVersion | null> {
+  return sql.begin((transaction) =>
+    createTermSheetVersionInTransaction(transaction, dealId, clerkUserId),
+  ) as Promise<TermSheetVersion | null>;
 }
 
 export async function findSharedTermSheet(

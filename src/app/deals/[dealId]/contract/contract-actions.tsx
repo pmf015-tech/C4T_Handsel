@@ -86,6 +86,7 @@ export function ContractActions({
         <button disabled={busy} onClick={invite} type="button">
           {copy.invite}
         </button>
+        <a href={`/deals/${dealId}/revise`}>{copy.revision}</a>
       </div>
       {message ? <p role="status">{message}</p> : null}
     </section>

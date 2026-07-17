@@ -20,6 +20,24 @@ export const DEAL_COPY = {
     ownerMilestonesHeading: "Milestone schedule",
     ownerAmountLabel: "Amount",
     ownerDueLabel: "Due",
+    milestoneStateLabel: "Status",
+    milestonePending: "Waiting on delivery",
+    milestoneDelivered: "Delivered · awaiting approval",
+    milestoneApproved: "Approved",
+    milestoneFrozen: "Frozen · dispute open",
+    milestoneDeliver: "Mark delivered",
+    milestoneApprove: "Approve deliverable",
+    milestoneWorking: "Working…",
+    milestoneRoleError: "Your role cannot take this action.",
+    milestoneStateError: "This milestone is not in a state for that.",
+    milestoneError: "Could not update this milestone.",
+    reviseEyebrow: "E2 · REDLINE",
+    reviseTitle: "Propose a revision.",
+    reviseBody:
+      "Changing any term publishes a new contract version and resets both signatures. The other party must review and sign again.",
+    reviseSubmit: "Publish revision",
+    reviseSaving: "Publishing revision…",
+    reviseUnchanged: "A revision must change the terms.",
     disputeLabel: "Default dispute rule",
     disputeRefund: "Refund brand",
     disputeSplit: "Split by delivered proportion",
@@ -52,6 +70,24 @@ export const DEAL_COPY = {
     ownerMilestonesHeading: "里程碑時間表",
     ownerAmountLabel: "金額",
     ownerDueLabel: "到期日",
+    milestoneStateLabel: "狀態",
+    milestonePending: "等待交付",
+    milestoneDelivered: "已交付 · 等待批核",
+    milestoneApproved: "已批核",
+    milestoneFrozen: "已凍結 · 爭議處理中",
+    milestoneDeliver: "標記為已交付",
+    milestoneApprove: "批核交付內容",
+    milestoneWorking: "處理緊…",
+    milestoneRoleError: "你嘅角色唔可以做呢個動作。",
+    milestoneStateError: "呢個里程碑而家嘅狀態唔容許呢個動作。",
+    milestoneError: "更新唔到呢個里程碑。",
+    reviseEyebrow: "E2 · 修訂條款",
+    reviseTitle: "提出條款修訂。",
+    reviseBody:
+      "改動任何條款都會產生新版合約,並且重設雙方簽名。對方需要重新檢視同再簽一次。",
+    reviseSubmit: "發佈修訂",
+    reviseSaving: "發佈緊修訂…",
+    reviseUnchanged: "修訂必須真係改動咗條款。",
     disputeLabel: "預設爭議處理",
     disputeRefund: "退還品牌款項",
     disputeSplit: "按已交付比例分配",
@@ -63,6 +99,17 @@ export const DEAL_COPY = {
     saved: "草稿已儲存，開緊合作控制台…",
     failure: "未能儲存草稿，請再試。",
   },
+} as const;
+
+export const CONTRACT_INVITE_COPY = {
+  eyebrow: "E2 · CONTRACT INVITE / 合約邀請",
+  title: "Join this deal as the brand party. / 以品牌身份加入呢份合作。",
+  review:
+    "Review this invitation before joining the deal. / 加入合作前，請先檢查邀請內容。",
+  joining: "Joining… / 加入緊…",
+  accept: "Accept invitation / 接受邀請",
+  failed:
+    "This invitation is invalid, expired, or already accepted. / 邀請無效、已過期，或者已被接受。",
 } as const;
 
 export const PUBLIC_TERM_SHEET_COPY = {

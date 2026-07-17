@@ -5,6 +5,7 @@ import { getDatabase } from "@/lib/db/client";
 import { findDealForParty } from "@/lib/db/deals";
 import { DEAL_COPY } from "@/lib/i18n/deals";
 import styles from "../deal-detail.module.css";
+import { MilestoneActions } from "./milestone-actions";
 import { TermSheetShare } from "./term-sheet-share";
 
 const copy = DEAL_COPY.en;
@@ -96,6 +97,12 @@ export default async function DealHubPage({
                         <dd>{formatDueDate(milestone.dueAt)}</dd>
                       </div>
                     </dl>
+                    <MilestoneActions
+                      dealId={deal.id}
+                      milestoneId={milestone.id}
+                      role={deal.viewerRole}
+                      state={milestone.state}
+                    />
                   </div>
                 </article>
               ))}
