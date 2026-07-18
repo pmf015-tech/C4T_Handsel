@@ -4,12 +4,16 @@ import { z } from "zod";
 
 import {
   approveMilestone,
+  autoApproveMilestone,
   deliverMilestone,
   rejectMilestone,
   type MilestonePartyRole,
   type MilestoneProjection,
   type MilestoneTransition,
 } from "@/domain/milestone/milestone";
+
+/** Sentinel actor for system-triggered events; deal_events.actor_clerk_user_id has no FK. */
+const AUTO_APPROVE_SYSTEM_ACTOR = "system:auto-approve";
 
 const MilestoneRowSchema = z.object({
   id: z.string().uuid(),
@@ -163,4 +167,59 @@ export async function markMilestoneRejected(
     (milestone, role, at) => rejectMilestone(milestone, role, reason, at),
     now,
   );
+}
+
+/**
+ * System-triggered sweep (cron only, never reachable by an authenticated
+ * party): finds every DELIVERED milestone across all deals and idempotently
+ * auto-approves the ones past the seven-day review window.
+ *
+ * The candidate list is read outside any lock, so each candidate is
+ * re-read with `for update` inside its own transaction before deciding
+ * whether to transition it. Without that re-check, two overlapping sweeps
+ * (e.g. a slow run still in flight when the next scheduled tick fires)
+ * could both see the same milestone as DELIVERED and each insert their own
+ * MILESTONE_AUTO_APPROVED event — harmless to the final state but a
+ * duplicate entry in the append-only audit trail.
+ */
+export async function runAutoApproveSweep(
+  sql: Sql,
+  now = new Date(),
+): Promise<readonly MilestoneProjection[]> {
+  const dueRows = await sql`
+    select id, deal_id as "dealId"
+    from deal_milestones
+    where state = 'DELIVERED'
+  `;
+
+  const approved: MilestoneProjection[] = [];
+  for (const row of dueRows) {
+    const dealId = row.dealId as string;
+    const milestoneId = row.id as string;
+    const updated = await sql.begin(async (transaction) => {
+      const rows = await transaction`
+        select id, deal_id as "dealId", state,
+          delivered_at as "deliveredAt", approved_at as "approvedAt",
+          frozen_from_state as "frozenFromState"
+        from deal_milestones
+        where id = ${milestoneId} and deal_id = ${dealId} and state = 'DELIVERED'
+        for update
+      `;
+      const current = rows[0];
+      if (!current) return null;
+      const transition = autoApproveMilestone(
+        MilestoneRowSchema.parse(current),
+        now,
+      );
+      if (!transition.event) return null;
+      return persistTransition(
+        transaction,
+        dealId,
+        AUTO_APPROVE_SYSTEM_ACTOR,
+        transition,
+      );
+    });
+    if (updated) approved.push(updated);
+  }
+  return approved;
 }
