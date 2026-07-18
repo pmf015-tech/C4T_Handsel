@@ -9,12 +9,11 @@ import { isDedicatedTestDatabase } from "./test-database";
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const appDatabaseUrl = process.env.DATABASE_URL ?? "";
-const describeWithDatabase = isDedicatedTestDatabase(
-  databaseUrl,
-  appDatabaseUrl,
-)
-  ? describe
-  : describe.skip;
+const describeWithDatabase =
+  isDedicatedTestDatabase(databaseUrl, appDatabaseUrl) &&
+  process.env.ALLOW_DESTRUCTIVE_INTEGRATION === "true"
+    ? describe
+    : describe.skip;
 const sql = postgres(
   databaseUrl || "postgres://handsel:handsel@127.0.0.1:54329/handsel_test",
   { max: 1 },

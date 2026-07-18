@@ -24,12 +24,11 @@ import { isDedicatedTestDatabase } from "./test-database";
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const appDatabaseUrl = process.env.DATABASE_URL ?? "";
-const describeWithDatabase = isDedicatedTestDatabase(
-  databaseUrl,
-  appDatabaseUrl,
-)
-  ? describe
-  : describe.skip;
+const describeWithDatabase =
+  isDedicatedTestDatabase(databaseUrl, appDatabaseUrl) &&
+  process.env.ALLOW_DESTRUCTIVE_INTEGRATION === "true"
+    ? describe
+    : describe.skip;
 const sql = postgres(
   databaseUrl || "postgres://handsel:handsel@127.0.0.1:54329/handsel_test",
   { max: 1 },
@@ -43,6 +42,7 @@ const migrationFiles = [
   "0005_hash_term_sheet_share_tokens.sql",
   "0006_contracts.sql",
   "0007_contract_invites.sql",
+  "0008_milestone_state_sales_reports.sql",
 ] as const;
 
 describeWithDatabase("Given a migrated E1 deal database", () => {
@@ -76,6 +76,7 @@ describeWithDatabase("Given a migrated E1 deal database", () => {
   beforeEach(async () => {
     await sql`
       truncate table
+        sales_reports,
         contract_signatures,
         contract_invites,
         contract_versions,
@@ -147,6 +148,7 @@ describeWithDatabase("Given a migrated E1 deal database", () => {
       disputeClause: "REFUND_BRAND",
       state: "DRAFT",
       createdByClerkUserId: creatorClerkUserId,
+      viewerRole: "creator",
       createdAt: new Date(draft.createdAt),
       updatedAt: new Date(draft.createdAt),
       milestones: [
@@ -156,6 +158,9 @@ describeWithDatabase("Given a migrated E1 deal database", () => {
           title: "Launch content",
           amountMinorUnits: 150_000,
           dueAt: new Date("2026-08-01T00:00:00.000Z"),
+          state: "PENDING",
+          deliveredAt: null,
+          approvedAt: null,
         },
         {
           id: expect.any(String),
@@ -163,6 +168,9 @@ describeWithDatabase("Given a migrated E1 deal database", () => {
           title: "Follow-up content",
           amountMinorUnits: 100_000,
           dueAt: new Date("2026-08-15T00:00:00.000Z"),
+          state: "PENDING",
+          deliveredAt: null,
+          approvedAt: null,
         },
       ],
     });

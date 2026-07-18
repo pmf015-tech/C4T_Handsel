@@ -71,8 +71,10 @@
 .landing-header nav { display: flex; align-items: center; gap: 42px; }
 .landing-header nav button, .landing-header nav a { border: 0; background: transparent; color: var(--navy); }
 .landing-actions { display: flex; align-items: center; gap: 22px; }
+.clerk-auth { display: flex; align-items: center; gap: 8px; }
 .landing-header nav .nav-demo { border: 1px solid var(--blue); border-radius: 8px; color: var(--blue); padding: 10px 14px; font-weight: 800; }
 .landing-actions .nav-demo { border: 1px solid var(--blue); border-radius: 8px; color: var(--blue); background: #fff; padding: 10px 14px; font-weight: 800; cursor: pointer; }
+.landing-actions .nav-signup { border: 1px solid var(--blue); border-radius: 8px; color: #fff; background: var(--blue); padding: 10px 14px; font-weight: 800; cursor: pointer; }
 .landing-main { width: min(1460px, 100%); margin: auto; }
 .landing-hero { display: grid; grid-template-columns: .9fr 1.1fr; gap: 54px; align-items: center; padding: 70px 6vw 58px; }
 .landing-hero h1 { font-size: clamp(48px, 6vw, 78px); line-height: 1.03; letter-spacing: -.055em; margin: 18px 0 22px; }
@@ -352,6 +354,7 @@ th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: l
   .landing-header nav { display: none; }
   .landing-actions { gap: 8px; }
   .landing-actions .nav-demo { padding: 8px 9px; font-size: 12px; }
+  .landing-actions .nav-signup { padding: 8px 9px; font-size: 12px; }
   .landing-hero { grid-template-columns: 1fr; padding: 44px 18px; gap: 34px; }
   .landing-hero h1 { font-size: 46px; }
   .landing-proof, .role-cards, .flow-strip--cards { grid-template-columns: 1fr; }
