@@ -10,6 +10,7 @@
     "format:check": "prettier --ignore-unknown --check .",
     "prepare": "husky",
     "start": "next start",
+    "vercel-build": "node scripts/vercel-build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
