@@ -4,10 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { getDatabase } from "@/lib/db/client";
 import { findDealForParty } from "@/lib/db/deals";
 import { findDealEventsForParty } from "@/lib/db/events";
+import { findPayoutsForDeal } from "@/lib/db/payouts";
 import { findSalesReportsForParty } from "@/lib/db/sales-reports";
 import { DEAL_COPY } from "@/lib/i18n/deals";
 import styles from "../deal-detail.module.css";
 import { MilestoneActions } from "./milestone-actions";
+import { PayoutActions } from "./payout-actions";
 import { TermSheetShare } from "./term-sheet-share";
 import { ActivityTimeline } from "../activity-timeline";
 import { SalesReportPanel } from "../sales-report-panel";
@@ -52,9 +54,10 @@ export default async function DealHubPage({
   const language = resolvedSearchParams?.lang === "zh-Hant" ? "zh-Hant" : "en";
   const tab =
     tabValue === "milestones" || tabValue === "sales" ? tabValue : "overview";
-  const [events, reports] = await Promise.all([
+  const [events, reports, payouts] = await Promise.all([
     findDealEventsForParty(database, deal.id, userId),
     findSalesReportsForParty(database, deal.id, userId),
+    findPayoutsForDeal(database, deal.id),
   ]);
   const nextAction = getNextDealAction(deal);
   return (
@@ -174,6 +177,15 @@ export default async function DealHubPage({
                           state={milestone.state}
                           deliveredAt={milestone.deliveredAt}
                           language={language}
+                        />
+                        <PayoutActions
+                          dealId={deal.id}
+                          milestoneId={milestone.id}
+                          milestoneState={milestone.state}
+                          payoutState={
+                            payouts.get(milestone.id)?.state ?? "NOT_FUNDED"
+                          }
+                          role={deal.viewerRole}
                         />
                       </div>
                     </article>

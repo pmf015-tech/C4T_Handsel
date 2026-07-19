@@ -6,6 +6,7 @@ import { getDatabase } from "@/lib/db/client";
 import { listDealsForUser } from "@/lib/db/deals";
 import { findProfileByClerkUserId } from "@/lib/db/profiles";
 import { ClockChip } from "../deals/clock-chip";
+import { ConnectPayouts } from "./connect-payouts";
 import { getNextDealAction } from "../deals/next-action";
 import { StateBadge } from "../deals/state-badge";
 import styles from "./dashboard.module.css";
@@ -38,6 +39,7 @@ export default async function DashboardPage() {
             Start a deal / 開始合作
           </a>
         </div>
+        <ConnectPayouts />
         <section
           className={styles.actionPanel}
           aria-labelledby="actions-heading"
