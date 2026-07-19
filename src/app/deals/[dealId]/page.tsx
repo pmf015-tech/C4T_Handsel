@@ -10,6 +10,7 @@ import { DEAL_COPY } from "@/lib/i18n/deals";
 import styles from "../deal-detail.module.css";
 import { MilestoneActions } from "./milestone-actions";
 import { PayoutActions } from "./payout-actions";
+import { SettlementAgentPanel } from "./settlement-agent-panel";
 import { TermSheetShare } from "./term-sheet-share";
 import { ActivityTimeline } from "../activity-timeline";
 import { SalesReportPanel } from "../sales-report-panel";
@@ -195,7 +196,10 @@ export default async function DealHubPage({
             </section>
           ) : null}
           {tab === "sales" ? (
-            <SalesReportPanel deal={deal} reports={reports} />
+            <>
+              <SalesReportPanel deal={deal} reports={reports} />
+              <SettlementAgentPanel dealId={deal.id} />
+            </>
           ) : null}
         </section>
       </div>
