@@ -21,7 +21,9 @@
   "dependencies": {
     "@clerk/nextjs": "^7.5.19",
     "@google/genai": "^2.12.0",
+    "gsap": "^3.15.0",
     "ky": "^2.0.2",
+    "motion": "^12.42.2",
     "next": "^15.3.0",
     "postgres": "^3.4.9",
     "react": "^19.0.0",
@@ -30,6 +32,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@clerk/testing": "^2.2.10",
     "@playwright/test": "^1.61.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
@@ -38,6 +41,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "prettier": "^3.9.5",
+    "shadcn": "^4.13.1",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   },

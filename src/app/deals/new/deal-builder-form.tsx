@@ -1,6 +1,6 @@
 "use client";
 
-import ky from "ky";
+import { api as ky } from "@/lib/http/client";
 import { useState, type ComponentProps, type FormEvent } from "react";
 import { DEAL_COPY } from "@/lib/i18n/deals";
 import { CreateDealInputSchema } from "@/lib/deals/input";

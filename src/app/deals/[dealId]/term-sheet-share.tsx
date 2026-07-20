@@ -1,6 +1,6 @@
 "use client";
 
-import ky from "ky";
+import { api as ky } from "@/lib/http/client";
 import { useState } from "react";
 
 import styles from "../deals.module.css";

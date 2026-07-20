@@ -1,6 +1,6 @@
 "use client";
 
-import ky from "ky";
+import { api as ky } from "@/lib/http/client";
 import { useEffect, useState } from "react";
 
 type ConnectStatus = "LOADING" | "NONE" | "PENDING" | "COMPLETE" | "ERROR";

@@ -1,6 +1,6 @@
 "use client";
 
-import ky from "ky";
+import { api as ky } from "@/lib/http/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

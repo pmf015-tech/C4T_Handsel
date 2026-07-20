@@ -1,6 +1,8 @@
 "use client";
 
-import ky, { TimeoutError } from "ky";
+import { TimeoutError } from "ky";
+
+import { api as ky } from "@/lib/http/client";
 import { useState, type FormEvent } from "react";
 
 import { ONBOARDING_COPY } from "@/lib/i18n/onboarding";
