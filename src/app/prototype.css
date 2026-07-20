@@ -463,3 +463,7 @@ th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: l
   .ai-card-heading, .agent-review-card__head { display: grid; gap: 8px; }
   .ai-card-heading .badge, .agent-review-card__head .badge { justify-self: start; }
 }
+
+.flow-strip--cards .card-reveal, .role-cards .card-spotlight { display: grid; }
+.flow-strip--cards .card-reveal article, .role-cards .card-spotlight article { height: 100%; }
+.preview-payout strong span { display: inline; }

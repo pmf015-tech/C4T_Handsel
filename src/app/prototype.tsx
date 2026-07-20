@@ -7,7 +7,7 @@ import { Landing, Onboarding, Dashboard, Builder, TermSheet, Contract, Deal, Mil
 import "./prototype.css";
 
 export default function HandselPrototype() {
-  const [screen, setScreen] = useState<Screen>("landing");
+  const [screen, setScreen] = useState<Screen>("sales");
   const [language, setLanguage] = useState<Language>("en");
   const [role, setRole] = useState<Role>("creator");
   const [builderStep, setBuilderStep] = useState(0);
