@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/payouts/reconcile",
-      "schedule": "30 * * * *"
+      "schedule": "30 3 * * *"
     }
   ]
 }
