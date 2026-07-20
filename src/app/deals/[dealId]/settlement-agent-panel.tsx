@@ -115,6 +115,7 @@ export function SettlementAgentPanel({ dealId }: { readonly dealId: string }) {
             ? "Reconciling… / 對帳中…"
             : "Reconcile latest report / 對帳最新報告"}
         </button>
+        <a href={`/deals/${dealId}/statement`}>View statement / 查看結算單</a>
       </div>
       {rules ? (
         <dl>
